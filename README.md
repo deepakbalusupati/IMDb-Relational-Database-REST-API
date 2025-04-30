@@ -1,3 +1,5 @@
+![Screenshot](imdb-database.png)
+
 # IMDb Relational Database & REST API
 
 A scalable SQL database and RESTful API for movie information storage and retrieval, inspired by IMDb.
