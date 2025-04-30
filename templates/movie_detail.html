@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" class="img-fluid rounded mb-4" alt="{{ movie.title }}">
+            {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded mb-4" style="height: 400px;">
+                    <i class="bi bi-film fs-1"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h1>{{ movie.title }} <span class="badge bg-primary">{{ movie.rating }}</span></h1>
+            <p class="text-muted">Released in {{ movie.release_year }} | {{ movie.duration_minutes }} minutes</p>
+            
+            <div class="mb-3">
+                {% for genre in movie.genres %}
+                    <span class="badge bg-secondary me-1">{{ genre }}</span>
+                {% endfor %}
+            </div>
+            
+            <h3>Plot</h3>
+            <p>{{ movie.plot }}</p>
+            
+            <h3 class="mt-4">Cast</h3>
+            <div class="row">
+                {% for actor in movie.actors %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            {% if actor.profile_url %}
+                                <img src="{{ actor.profile_url }}" class="card-img-top" alt="{{ actor.name }}">
+                            {% else %}
+                                <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 100px;">
+                                    <i class="bi bi-person fs-1"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h6 class="card-title">{{ actor.name }}</h6>
+                                <p class="card-text small">{{ actor.role }}</p>
+                                <a href="{{ url_for('web.actor_detail', actor_id=actor.actor_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Reviews</h3>
+            
+            {% if movie.reviews %}
+                {% for review in movie.reviews %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title">{{ review.username }}</h5>
+                                <span class="badge bg-warning text-dark">{{ review.rating }}/10</span>
+                            </div>
+                            <p class="card-text">{{ review.comment }}</p>
+                            <p class="card-text"><small class="text-muted">{{ review.created_at }}</small></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">No reviews yet. Be the first to review!</div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,1065 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "IMDb Clone API",
+      "description": "API for accessing movie and actor information",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:5000/api",
+        "description": "Local development server"
+      }
+    ],
+    "paths": {
+      "/movies": {
+        "get": {
+          "summary": "Get all movies",
+          "description": "Returns a list of movies with optional pagination and search",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 1
+              }
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "description": "Items per page",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 10
+              }
+            },
+            {
+              "name": "search",
+              "in": "query",
+              "description": "Search query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of movies",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "movies": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Movie"
+                        }
+                      },
+                      "page": {
+                        "type": "integer"
+                      },
+                      "per_page": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Add a new movie",
+          "description": "Creates a new movie record",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Movie created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "movie_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/movies/{movie_id}": {
+        "get": {
+          "summary": "Get movie by ID",
+          "description": "Returns detailed information about a specific movie",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Movie details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/MovieDetail"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Movie not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update movie",
+          "description": "Updates an existing movie",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Movie updated successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "404": {
+              "description": "Movie not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete movie",
+          "description": "Deletes a movie record",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Movie deleted successfully"
+            },
+            "404": {
+              "description": "Movie not found"
+            }
+          }
+        }
+      },
+      "/movies/top-rated": {
+        "get": {
+          "summary": "Get top rated movies",
+          "description": "Returns a list of top rated movies",
+          "parameters": [
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "Number of movies to return",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 10
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of top rated movies",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "movies": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Movie"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/movies/{movie_id}/actors": {
+        "post": {
+          "summary": "Add actor to movie",
+          "description": "Adds an actor to a movie with a specific role",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "actor_id": {
+                      "type": "integer"
+                    },
+                    "role": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["actor_id", "role"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Actor added to movie successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/movies/{movie_id}/actors/{actor_id}": {
+        "delete": {
+          "summary": "Remove actor from movie",
+          "description": "Removes an actor from a movie",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            },
+            {
+              "name": "actor_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Actor removed from movie successfully"
+            },
+            "404": {
+              "description": "Actor not found in movie"
+            }
+          }
+        }
+      },
+      "/movies/{movie_id}/reviews": {
+        "get": {
+          "summary": "Get movie reviews",
+          "description": "Returns all reviews for a specific movie",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of reviews",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "reviews": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Review"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Movie not found"
+            }
+          }
+        },
+        "post": {
+          "summary": "Add review to movie",
+          "description": "Adds a review to a movie",
+          "parameters": [
+            {
+              "name": "movie_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "integer"
+                    },
+                    "rating": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10
+                    },
+                    "comment": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["user_id", "rating"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Review added successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/actors": {
+        "get": {
+          "summary": "Get all actors",
+          "description": "Returns a list of actors with optional pagination and search",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 1
+              }
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "description": "Items per page",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 10
+              }
+            },
+            {
+              "name": "search",
+              "in": "query",
+              "description": "Search query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of actors",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "actors": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Actor"
+                        }
+                      },
+                      "page": {
+                        "type": "integer"
+                      },
+                      "per_page": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Add a new actor",
+          "description": "Creates a new actor record",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActorInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Actor created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "actor_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/actors/{actor_id}": {
+        "get": {
+          "summary": "Get actor by ID",
+          "description": "Returns detailed information about a specific actor",
+          "parameters": [
+            {
+              "name": "actor_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Actor details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ActorDetail"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Actor not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update actor",
+          "description": "Updates an existing actor",
+          "parameters": [
+            {
+              "name": "actor_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActorInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Actor updated successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "404": {
+              "description": "Actor not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete actor",
+          "description": "Deletes an actor record",
+          "parameters": [
+            {
+              "name": "actor_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Actor deleted successfully"
+            },
+            "404": {
+              "description": "Actor not found"
+            }
+          }
+        }
+      },
+      "/users": {
+        "get": {
+          "summary": "Get all users",
+          "description": "Returns a list of users with optional pagination",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 1
+              }
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "description": "Items per page",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 10
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of users",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "users": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      },
+                      "page": {
+                        "type": "integer"
+                      },
+                      "per_page": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Add a new user",
+          "description": "Creates a new user record",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "user_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/users/{user_id}": {
+        "get": {
+          "summary": "Get user by ID",
+          "description": "Returns information about a specific user",
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update user",
+          "description": "Updates an existing user",
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User updated successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete user",
+          "description": "Deletes a user record",
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User deleted successfully"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "summary": "User login",
+          "description": "Authenticates a user and returns user details",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["username", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "user": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Movie": {
+          "type": "object",
+          "properties": {
+            "movie_id": {
+              "type": "integer"
+            },
+            "title": {
+              "type": "string"
+            },
+            "release_year": {
+              "type": "integer"
+            },
+            "rating": {
+              "type": "number",
+              "format": "float"
+            },
+            "plot": {
+              "type": "string"
+            },
+            "duration_minutes": {
+              "type": "integer"
+            },
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "MovieDetail": {
+          "type": "object",
+          "properties": {
+            "movie_id": {
+              "type": "integer"
+            },
+            "title": {
+              "type": "string"
+            },
+            "release_year": {
+              "type": "integer"
+            },
+            "rating": {
+              "type": "number",
+              "format": "float"
+            },
+            "plot": {
+              "type": "string"
+            },
+            "duration_minutes": {
+              "type": "integer"
+            },
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "actors": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/MovieActor"
+              }
+            },
+            "reviews": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "MovieInput": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "release_year": {
+              "type": "integer"
+            },
+            "rating": {
+              "type": "number",
+              "format": "float"
+            },
+            "plot": {
+              "type": "string"
+            },
+            "duration_minutes": {
+              "type": "integer"
+            },
+            "genres": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": ["title", "release_year", "rating", "plot", "duration_minutes"]
+        },
+        "MovieActor": {
+          "type": "object",
+          "properties": {
+            "actor_id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "birth_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "role": {
+              "type": "string"
+            }
+          }
+        },
+        "Review": {
+          "type": "object",
+          "properties": {
+            "review_id": {
+              "type": "integer"
+            },
+            "rating": {
+              "type": "integer"
+            },
+            "comment": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "username": {
+              "type": "string"
+            }
+          }
+        },
+        "Actor": {
+          "type": "object",
+          "properties": {
+            "actor_id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "birth_date": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "ActorDetail": {
+          "type": "object",
+          "properties": {
+            "actor_id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "birth_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "bio": {
+              "type": "string"
+            },
+            "movies": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ActorMovie"
+              }
+            }
+          }
+        },
+        "ActorInput": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "birth_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "bio": {
+              "type": "string"
+            }
+          },
+          "required": ["name"]
+        },
+        "ActorMovie": {
+          "type": "object",
+          "properties": {
+            "movie_id": {
+              "type": "integer"
+            },
+            "title": {
+              "type": "string"
+            },
+            "release_year": {
+              "type": "integer"
+            },
+            "role": {
+              "type": "string"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "properties": {
+            "user_id": {
+              "type": "integer"
+            },
+            "username": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "UserInput": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          },
+          "required": ["username", "email", "password"]
+        }
+      }
+    }
+  }

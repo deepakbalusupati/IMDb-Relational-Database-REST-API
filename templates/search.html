@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Search Results for "{{ query }}"</h1>
+    
+    {% if movies or actors %}
+        {% if movies %}
+            <h2 class="mt-4">Movies</h2>
+            <div class="row">
+                {% for movie in movies %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            {% if movie.poster_url %}
+                                <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
+                            {% else %}
+                                <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-film fs-1"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ movie.title }}</h5>
+                                <p class="card-text">
+                                    <span class="badge bg-primary">{{ movie.rating }}</span>
+                                    <small class="text-muted">{{ movie.release_year }}</small>
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="{{ url_for('web.movie_detail', movie_id=movie.movie_id) }}" class="btn btn-sm btn-outline-primary">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if actors %}
+            <h2 class="mt-4">Actors</h2>
+            <div class="row">
+                {% for actor in actors %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            {% if actor.profile_url %}
+                                <img src="{{ actor.profile_url }}" class="card-img-top" alt="{{ actor.name }}">
+                            {% else %}
+                                <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-person fs-1"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ actor.name }}</h5>
+                                {% if actor.birth_date %}
+                                    <p class="card-text"><small class="text-muted">Born: {{ actor.birth_date }}</small></p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="{{ url_for('web.actor_detail', actor_id=actor.actor_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-warning">No results found for "{{ query }}"</div>
+    {% endif %}
+{% endblock %}
