@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Actor Collection</h1>
+    
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for actor in actors %}
+        <div class="col">
+            <div class="card h-100 shadow">
+                <img src="{{ actor.profile_url }}" 
+                     class="card-img-top" 
+                     alt="{{ actor.name }}"
+                     style="height: 400px; object-fit: cover;">
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ actor.name }}</h5>
+                    <div class="mt-2">
+                        {% if actor.birth_date %}
+                        <p class="text-muted mb-2">Born: {{ actor.birth_date }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-white border-0">
+                    <a href="{{ url_for('web.actor_detail', actor_id=actor.actor_id) }}" 
+                       class="btn btn-outline-primary w-100">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
